@@ -1,10 +1,8 @@
-import { SearchTickets } from "./pages/SearchTickets";
+import RootLayout from "./layout";
 
 function App() {
   return (
-    <>
-      <SearchTickets />
-    </>
+    <RootLayout />
   );
 }
 
