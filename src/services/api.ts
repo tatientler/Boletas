@@ -5,7 +5,7 @@ interface SearchTicketsParams {
 }
 
 export const api = axios.create({
-  baseURL: "https://3.222.87.163/desafio",
+  baseURL: "http://3.222.87.163/desafio",
 });
 
 export const getClients = async () => {

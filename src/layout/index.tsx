@@ -25,7 +25,7 @@ export default function RootLayout() {
         <div className="flex flex-1">
           <Sidebar open={isOpen} setOpen={setIsOpen} />
           <div
-            className="overflow-y-auto px-7 py-5 scroll-smooth w-full"
+            className="overflow-y-auto px-7 py-4 scroll-smooth w-full bg-gray-100"
             style={{ height: "calc(100vh - 64px)" }}
           >
             <SearchTickets />

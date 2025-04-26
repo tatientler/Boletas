@@ -20,18 +20,18 @@ interface Option {
   label: string;
 }
 
-interface SelectProps {
+interface MultiSelectProps {
   label?: string;
   name?: string;
   id?: string;
-  disabled?: boolean;
   options: Option[];
-  value?: string;
-  onChange: (value: string) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
   placeholder?: string;
+  limitSelectedValues?: number;
 }
 
-export function Select({
+export function MultiSelect({
   label,
   name,
   id,
@@ -39,10 +39,23 @@ export function Select({
   value,
   onChange,
   placeholder = "Selecione...",
-}: SelectProps) {
+  limitSelectedValues,
+}: MultiSelectProps) {
   const [open, setOpen] = useState(false);
 
-  const selectedLabel = options.find((option) => option.value === value)?.label;
+  const toggleOption = (optionValue: string) => {
+    if (value.includes(optionValue)) {
+      onChange(value.filter((v) => v !== optionValue));
+    } else {
+      onChange([...value, optionValue]);
+    }
+  };
+
+  const selectedLabels = options
+    .filter((option) => value.includes(option.value))
+    .map((option) => option.label)
+    .slice(0, limitSelectedValues)
+    .join(", ");
 
   return (
     <div className="flex flex-col gap-1">
@@ -61,7 +74,12 @@ export function Select({
             aria-expanded={open}
             className="w-full justify-between"
           >
-            {selectedLabel || placeholder}
+            {selectedLabels || placeholder}
+            {limitSelectedValues && value.length > limitSelectedValues && (
+              <span className="ml-2 text-sm text-gray-500">
+                +{value.length - limitSelectedValues}
+              </span>
+            )}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -74,15 +92,12 @@ export function Select({
                 <CommandItem
                   key={option.value}
                   value={option.label}
-                  onSelect={() => {
-                    onChange(option.value);
-                    setOpen(false);
-                  }}
+                  onSelect={() => toggleOption(option.value)}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      value.includes(option.value) ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {option.label}
