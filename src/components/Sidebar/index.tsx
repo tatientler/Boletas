@@ -36,6 +36,10 @@ const routes = [
     ],
   },
   {
+    name: "Boletas",
+    icon: <FileText size={22} />,
+  },
+  {
     name: "Configurações",
     icon: <Settings size={22} />,
   },
@@ -126,7 +130,7 @@ export default function Sidebar({ open }: SidebarProps) {
       ) : (
         <div
           className={`flex ${
-            isOpen ? "w-[200px]" : "w-[95px]"
+            isOpen ? "w-[190px]" : "w-[94px]"
           } transition-all duration-300 relative`}
           style={{ height: "calc(100vh - 64px)" }}
         >

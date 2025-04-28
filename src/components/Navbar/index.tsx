@@ -58,7 +58,7 @@ export default function Navbar({ user, open, setOpen }: NavbarProps) {
                   alt="Imagem do usuário"
                 />
               </div>
-              <div className="absolute right-0 mt-2 hidden w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 group-hover:block">
+              <div className="absolute right-0 mt-2 hidden w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 group-hover:block z-10">
                 <div className="py-1">
                   <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     <div className="font-medium">{user.name}</div>

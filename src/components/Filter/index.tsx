@@ -12,19 +12,23 @@ interface Option {
   value: string;
 }
 
-interface FilterProps {
+export interface FilterProps {
   codigoBoleta: string;
   cliente: string;
   fundo: string;
-  situacoes: string[];
+  situacoes: number[];
   tiposOperacao: string[];
   dataInicio: string;
   dataFim: string;
-  valorMinimo: string;
-  valorMaximo: string;
+  valorMinimo: number | null;
+  valorMaximo: number | null;
 }
 
-export function Filter() {
+interface FilterComponentProps {
+  onSubmit: (filters: FilterProps) => void;
+}
+
+export function Filter({ onSubmit }: FilterComponentProps) {
   const { register, handleSubmit, setValue, watch, reset } =
     useForm<FilterProps>({
       defaultValues: {
@@ -35,38 +39,54 @@ export function Filter() {
         tiposOperacao: [],
         dataInicio: "",
         dataFim: "",
-        valorMinimo: "",
-        valorMaximo: "",
+        valorMinimo: null,
+        valorMaximo: null,
       },
     });
 
-  const [clientes, setClientes] = useState<Option[]>([]);
-  const [fundos, setFundos] = useState<Option[]>([]);
-  const [situacoes, setSituacoes] = useState<Option[]>([]);
-  const [valorMinimo, setValorMinimo] = useState<string>("");
-  const [valorMaximo, setValorMaximo] = useState<string>("");
+  const [clients, setClients] = useState<Option[]>([]);
+  const [funds, setFunds] = useState<Option[]>([]);
+  const [situations, setSituations] = useState<Option[]>([]);
+  const [minimumValue, setMinimumValue] = useState<string>("");
+  const [maxValue, setMaxValue] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   const filters = watch();
 
-  const formatarValor = (valor: string) => {
-    const numValor = valor.replace(/[^\d]/g, "");
-    const formatado = new Intl.NumberFormat("pt-BR", {
+  const formatValueAsCurrency = (value: string) => {
+    const onlyNumbers = value.replace(/\D/g, "");
+    if (!onlyNumbers) return "";
+
+    const numericValue = Number(onlyNumbers) / 100;
+
+    return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(Number(numValor) / 100);
-    return formatado;
+    }).format(numericValue);
   };
 
   const handleChangeMin = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setValorMinimo(valor);
-    setValue("valorMinimo", valor.replace(/[^\d]/g, ""));
+    const inputValue = e.target.value;
+    const cleanedNumericInput = inputValue.replace(/\D/g, "");
+
+    const numericValue = cleanedNumericInput
+      ? parseFloat((Number(cleanedNumericInput) / 100).toFixed(2))
+      : null;
+
+    setMinimumValue(inputValue);
+    setValue("valorMinimo", numericValue);
   };
 
   const handleChangeMax = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setValorMaximo(valor);
-    setValue("valorMaximo", valor.replace(/[^\d]/g, ""));
+    const inputValue = e.target.value;
+    const cleanedNumericInput = inputValue.replace(/\D/g, "");
+
+    const numericValue = cleanedNumericInput
+      ? parseFloat((Number(cleanedNumericInput) / 100).toFixed(2))
+      : null;
+
+    setMaxValue(inputValue);
+    setValue("valorMaximo", numericValue);
   };
 
   useEffect(() => {
@@ -78,21 +98,21 @@ export function Filter() {
           getSituations() as Promise<{ nome: string; id: number }[]>,
         ]);
 
-        setClientes(
+        setClients(
           clientsData?.map((c) => ({
             label: c.nome,
             value: c.id,
           }))
         );
 
-        setFundos(
+        setFunds(
           fundsData?.map((f: { nome: string; id: string }) => ({
             label: f.nome,
             value: f.id,
           }))
         );
 
-        setSituacoes(
+        setSituations(
           situationsData?.map((s: { nome: string; id: number }) => ({
             label: s.nome,
             value: s.id.toString(),
@@ -100,18 +120,29 @@ export function Filter() {
         );
       } catch (error) {
         console.error("Erro ao buscar filtros:", error);
+        setError("Erro ao carregar os filtros. Tente novamente mais tarde.");
       }
     }
 
     fetchData();
   }, []);
 
-  function onSubmit(data: FilterProps) {
-    console.log("Filtros aplicados:", data);
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  function handleClearFilters() {
+    reset();
+    setMinimumValue("");
+    setMaxValue("");
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(() => onSubmit(filters))}>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Input
           type="number"
@@ -125,7 +156,7 @@ export function Filter() {
           label="Cliente"
           id="client"
           name="client"
-          options={clientes}
+          options={clients}
           value={filters.cliente}
           onChange={(value) => setValue("cliente", value)}
         />
@@ -134,7 +165,7 @@ export function Filter() {
           label="Fundo"
           id="fund"
           name="fund"
-          options={fundos}
+          options={funds}
           value={filters.fundo}
           onChange={(value) => setValue("fundo", value)}
         />
@@ -143,9 +174,9 @@ export function Filter() {
           label="Situação"
           id="situation"
           name="situation"
-          options={situacoes}
-          value={filters.situacoes}
-          onChange={(value) => setValue("situacoes", value)}
+          options={situations}
+          value={filters.situacoes.map(String)}
+          onChange={(value) => setValue("situacoes", value.map(Number))}
           limitSelectedValues={3}
         />
 
@@ -178,24 +209,22 @@ export function Filter() {
           type="text"
           id="minimumValue"
           label="Valor Mínimo"
-          {...register("valorMinimo")}
           placeholder="R$ 200,00"
-          value={formatarValor(valorMinimo)}
-          onChange={handleChangeMin}
+          value={formatValueAsCurrency(minimumValue)}
+          onChange={(e) => handleChangeMin(e)}
         />
 
         <Input
           type="text"
           id="maximumValue"
           label="Valor Máximo"
-          {...register("valorMaximo")}
           placeholder="R$ 1.000,00"
-          value={formatarValor(valorMaximo)}
-          onChange={handleChangeMax}
+          value={formatValueAsCurrency(maxValue)}
+          onChange={(e) => handleChangeMax(e)}
         />
 
         <div className="md:col-span-2 lg:col-span-3 flex justify-end gap-2 mt-4">
-          <Button type="button" variant="outline" onClick={() => reset()}>
+          <Button type="button" variant="outline" onClick={handleClearFilters}>
             Limpar Filtros
           </Button>
           <Button type="submit">Pesquisar</Button>

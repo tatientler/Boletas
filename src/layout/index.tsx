@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { SearchTickets } from "@/pages/SearchTickets";
+import { Outlet } from "react-router-dom";
 
 export default function RootLayout() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export default function RootLayout() {
             className="overflow-y-auto px-7 py-4 scroll-smooth w-full bg-gray-100"
             style={{ height: "calc(100vh - 64px)" }}
           >
-            <SearchTickets />
+            <Outlet />
           </div>
         </div>
       </div>

@@ -1,9 +1,7 @@
-import RootLayout from "./layout";
+import PublicRoutes from "./routes/routes";
 
 function App() {
-  return (
-    <RootLayout />
-  );
+  return <PublicRoutes />;
 }
 
 export default App;

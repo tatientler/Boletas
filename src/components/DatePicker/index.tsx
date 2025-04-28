@@ -4,7 +4,11 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 interface DatePickerProps {
@@ -19,7 +23,7 @@ export function DatePicker({ label, value, onChange }: DatePickerProps) {
   const parsedDate = value ? new Date(value) : undefined;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {label && <label className="text-sm font-medium">{label}</label>}
 
       <Popover open={open} onOpenChange={setOpen}>
@@ -27,7 +31,7 @@ export function DatePicker({ label, value, onChange }: DatePickerProps) {
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal h-[34px]",
               !value && "text-muted-foreground"
             )}
           >

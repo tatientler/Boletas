@@ -9,7 +9,7 @@ export function Input({ label, ...props }: InputProps) {
   return (
     <div className="flex flex-col gap-2">
       {label && <Label>{label}</Label>}
-      <InputComponent {...props} />
+      <InputComponent className="text-sm md:text-md" {...props} />
     </div>
   );
 }

@@ -75,11 +75,6 @@ export function MultiSelect({
             className="w-full justify-between"
           >
             {selectedLabels || placeholder}
-            {limitSelectedValues && value.length > limitSelectedValues && (
-              <span className="ml-2 text-sm text-gray-500">
-                +{value.length - limitSelectedValues}
-              </span>
-            )}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

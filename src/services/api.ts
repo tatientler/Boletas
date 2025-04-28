@@ -1,9 +1,5 @@
 import axios from "axios";
 
-interface SearchTicketsParams {
-  [key: string]: string | number | boolean;
-}
-
 export const api = axios.create({
   baseURL: "http://3.222.87.163/desafio",
 });
@@ -23,9 +19,7 @@ export const getSituations = async () => {
   return response.data;
 };
 
-export const searchTickets = async (params: SearchTicketsParams) => {
-  const response = await api.get("/v1/boletas-cota-fundo/pesquisar", {
-    params,
-  });
+export const searchTickets = async () => {
+  const response = await api.get("/v1/boletas-cota-fundo/pesquisar");
   return response.data;
 };
