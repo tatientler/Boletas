@@ -18,6 +18,7 @@ interface DataRow {
   valorFinanceiro: number;
   idSituacao: number;
   codigoTipoOperacao: string;
+  id: number;
 }
 
 export function SearchTickets() {
@@ -77,7 +78,7 @@ export function SearchTickets() {
     const filtered = data.filter((item) => {
       const validations = [
         !filter.cliente || item.idCliente === filter.cliente,
-        !filter.codigoBoleta || item.codigoBoleta === filter.codigoBoleta,
+        !filter.codigoBoleta || item.id === Number(filter.codigoBoleta),
         !filter.fundo || item.idFundo === filter.fundo,
         filter.situacoes.length === 0 ||
           (filter.situacoes.length > 0 &&
@@ -105,7 +106,7 @@ export function SearchTickets() {
   };
 
   const columns = [
-    { key: "codigoBoleta", label: "Código da Boleta" },
+    { key: "id", label: "Código da Boleta" },
     { key: "idCliente", label: "Identificador do Cliente" },
     { key: "cpfCnpjCliente", label: "CPF/CNPJ do Cliente" },
     { key: "nomeCliente", label: "Nome do Cliente" },
